@@ -20,9 +20,8 @@ const Start = ({ navigation }) => {
         <View style={styles.bodyContainer}>
 
           <View style={styles.inputContainer} >
+
             <TextInput
-              // inlineImageLeft={icon}
-              inlineImageLeft={require('../assets/icon.svg')}
               style={styles.textInput}
               value={name}
               onChangeText={setName}
@@ -62,6 +61,7 @@ const Start = ({ navigation }) => {
               <Text style={styles.textStartChatting}>Start Chatting</Text>
             </TouchableOpacity>
           </View>
+
         </View>
 
       </ImageBackground>
@@ -75,22 +75,22 @@ const styles = StyleSheet.create({
   },
   imageBG: {
     flex: 1,
-    width: '100%',
-    justifyContent: 'center',
+    // width: '100%',
+    // justifyContent: 'center',
     alignItems: 'center'
   },
   titleContainer: {
-    flex: 56,
+    flex: 50,
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   textTitle: {
     color: '#FFFFFF',
     fontSize: 45,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   bodyContainer: {
-    flex: 44,
+    flex: 50,
     alignItems: 'center',
     width: '88%',
     backgroundColor: 'white',
@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
 
     padding: 15,
     borderWidth: 1,
-    marginTop: 15,
-    marginBottom: 15
+    // marginTop: 15,
+    // marginBottom: 15
   },
   textChooseColor: {
     fontSize: 16,
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   chooseColorContainer: {
     flex: 1,
     width: '88%',
-    alignItems: 'left',
-    justifyContent: 'center',
+    // alignItems: 'left',
+    // justifyContent: 'center',
   },
   buttonContainer: {
     flex: 1,
@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
   },
   circleContainer: {
     flexDirection: 'row'
-
   },
   circle: {
     height: 40,
