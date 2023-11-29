@@ -1,12 +1,29 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, ImageBackground, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, ImageBackground, Image, Alert } from 'react-native';
 import backgroundImage from '../assets/background-image.png';
-import icon from '../assets/icon.svg';
+import TextInputWithIcon from './TextInputWithIcon';
+import { getAuth, signInAnonymously } from "firebase/auth";
+// To ignore AsyncStorage warning
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
   const [chosenColor, setChosenColor] = useState('white');
+
+  const auth = getAuth();
+
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        navigation.navigate("Screen2", { userID: result.user.uid, name: name, color: chosenColor });
+        Alert.alert("Signed in Successfully!");
+      })
+      .catch((error) => {
+        Alert.alert("Unable to sign in, try again later.");
+      })
+  }
 
 
   return (
@@ -20,14 +37,20 @@ const Start = ({ navigation }) => {
         <View style={styles.bodyContainer}>
 
           <View style={styles.inputContainer} >
-
             <TextInput
               style={styles.textInput}
               value={name}
               onChangeText={setName}
               placeholder='Your Name'
-
             />
+            {/* <TextInput value={name} onChangeText={setName} >
+
+            </TextInput> */}
+
+            {/* <TextInputWithIcon
+              name={name}
+              setName={setName}
+            /> */}
           </View>
 
           <View style={styles.chooseColorContainer} >
@@ -56,7 +79,7 @@ const Start = ({ navigation }) => {
           <View style={styles.buttonContainer} >
             <TouchableOpacity
               style={styles.buttonStartChatting}
-              onPress={() => navigation.navigate('Screen2', { name: name, color: chosenColor })}
+              onPress={signInUser}
             >
               <Text style={styles.textStartChatting}>Start Chatting</Text>
             </TouchableOpacity>
