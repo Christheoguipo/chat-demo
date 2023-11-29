@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Bubble, GiftedChat } from 'react-native-gifted-chat';
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
+
+const Chat = ({ route, navigation, db }) => {
   const { name } = route.params;
   const { color } = route.params;
 
   const [messages, setMessages] = useState([]);
+
+  const { userID } = route.params;
 
   // No dependency was added to useEffect so that it only runs once when the component is mounted
   useEffect(() => {
@@ -16,24 +20,42 @@ const Chat = ({ route, navigation }) => {
       title: name
     });
 
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-      {
-        _id: 2,
-        text: 'You have entered the chat.',
-        createdAt: new Date(),
-        system: true, // Setting this to true makes it a system message.
-      },
-    ]);
+    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+    const unsubMessages = onSnapshot(q, (documentsSnapshot) => {
+      let newMessages = [];
+      documentsSnapshot.forEach(doc => {
+        const formattedDate = doc.data().createdAt.toDate();
+
+        newMessages.push({ id: doc.id, ...doc.data(), createdAt: formattedDate })
+      });
+      setMessages(newMessages);
+    });
+
+    // Clean up code
+    return () => {
+      if (unsubMessages) unsubMessages();
+    }
+
+    // setMessages([
+    //   {
+    //     _id: 1,
+    //     text: "Hello developer",
+    //     createdAt: new Date(),
+    //     user: {
+    //       _id: 2,
+    //       name: "React Native",
+    //       avatar: "https://placeimg.com/140/140/any",
+    //     },
+    //   },
+    //   {
+    //     _id: 2,
+    //     text: 'You have entered the chat.',
+    //     createdAt: new Date(),
+    //     system: true, // Setting this to true makes it a system message.
+    //   },
+    // ]);
+
+
   }, []);
 
   // useEffect(() => {
@@ -52,8 +74,21 @@ const Chat = ({ route, navigation }) => {
   // }, []);
 
 
+  // const addMessages = async (newMessage) => {
+  //   const newMessageRef = await addDoc(collection(db, "messages"), newMessage);
+  //   if (newMessageRef.id) {
+  //     setMessages([newMessage, ...messages]);
+  //     Alert.alert(`The message "${listName}" has been added.`);
+  //   } else {
+  //     Alert.alert("Unable to send message. Please try later");
+  //   }
+  // }
+
   const onSend = (newMessages) => {
-    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+    // setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+
+    addDoc(collection(db, "messages"), newMessages[0])
+
   }
 
   const renderBubble = (props) => {
@@ -78,7 +113,8 @@ const Chat = ({ route, navigation }) => {
         renderBubble={renderBubble}
         onSend={messages => onSend(messages)}
         user={{
-          _id: 1
+          _id: userID,
+          name: name
         }}
       />
       {/* This will avoid the keyboard from covering the input box */}
