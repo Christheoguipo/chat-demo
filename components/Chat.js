@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
-import { Bubble, GiftedChat } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-const Chat = ({ route, navigation, db }) => {
+const Chat = ({ route, navigation, db, isConnected }) => {
   const { name } = route.params;
   const { color } = route.params;
 
@@ -13,23 +13,33 @@ const Chat = ({ route, navigation, db }) => {
 
   const { userID } = route.params;
 
-  // No dependency was added to useEffect so that it only runs once when the component is mounted
+  // Put this outside useEffect to avoide memory leaks.
+  let unsubMessages;
+  // No need to add dependency for "querying new collections of messages"; It fetches data automatically because of the onSnapshot function
   useEffect(() => {
 
     navigation.setOptions({
       title: name
     });
+    if (isConnected === true) {
+      // unregister current onSnapshot() listener to avoid registering multiple listeners when
+      // useEffect code is re-executed.
+      if (unsubMessages) unsubMessages();
+      unsubMessages = null;
 
-    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    const unsubMessages = onSnapshot(q, (documentsSnapshot) => {
-      let newMessages = [];
-      documentsSnapshot.forEach(doc => {
-        const formattedDate = doc.data().createdAt.toDate();
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unsubMessages = onSnapshot(q, (documentsSnapshot) => {
+        let newMessages = [];
+        documentsSnapshot.forEach(doc => {
+          const formattedDate = doc.data().createdAt.toDate();
 
-        newMessages.push({ id: doc.id, ...doc.data(), createdAt: formattedDate })
+          newMessages.push({ id: doc.id, ...doc.data(), createdAt: formattedDate })
+        });
+        cacheMessages(newMessages);
+        setMessages(newMessages);
       });
-      setMessages(newMessages);
-    });
+
+    } else loadCachedMessages();
 
     // Clean up code
     return () => {
@@ -55,34 +65,20 @@ const Chat = ({ route, navigation, db }) => {
     //   },
     // ]);
 
+  }, [isConnected]);
 
-  }, []);
+  const cacheMessages = async (messagesToCache) => {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(messagesToCache));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
-  // useEffect(() => {
-  //   setMessages([
-  //     {
-  //       _id: 1,
-  //       text: "Hello developer",
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 2,
-  //         name: "React Native",
-  //         avatar: "https://placeimg.com/140/140/any",
-  //       },
-  //     },
-  //   ]);
-  // }, []);
-
-
-  // const addMessages = async (newMessage) => {
-  //   const newMessageRef = await addDoc(collection(db, "messages"), newMessage);
-  //   if (newMessageRef.id) {
-  //     setMessages([newMessage, ...messages]);
-  //     Alert.alert(`The message "${listName}" has been added.`);
-  //   } else {
-  //     Alert.alert("Unable to send message. Please try later");
-  //   }
-  // }
+  const loadCachedMessages = async () => {
+    const cachedMessages = await AsyncStorage.getItem("messages") || [];
+    setMessages(JSON.parse(cachedMessages));
+  }
 
   const onSend = (newMessages) => {
     // setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
@@ -105,12 +101,20 @@ const Chat = ({ route, navigation, db }) => {
     />
   }
 
+  const renderInputToolbar = (props) => {
+    if (isConnected === true)
+      return <InputToolbar {...props} />
+    else
+      return null
+  }
+
 
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
+        renderInputToolbar={renderInputToolbar}
         onSend={messages => onSend(messages)}
         user={{
           _id: userID,
