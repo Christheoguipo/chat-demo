@@ -5,9 +5,10 @@ import Start from './components/Start';
 import Chat from './components/Chat';
 import { useEffect } from 'react';
 
-// Import the functions you need from the SDKs you need
+// Import the functions you needed for the firebase app and firestore
 import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 import { StyleSheet, LogBox, Alert } from 'react-native';
 // To ignore AsyncStorage warning
@@ -19,8 +20,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-  // Your web app's Firebase configuration
-
+  // My Firebase configuration
   const firebaseConfig = {
 
     apiKey: "AIzaSyAdzM32aQVvnEByC2mBevk0xgjW-U3NhWs",
@@ -37,16 +37,19 @@ export default function App() {
 
   };
 
-
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
 
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
+  // Initialize Cloud Storage and get a reference to the service
+  const storage = getStorage(app);
+
   // useNetInfo works similar to useState
   // This checks for the connection status in real time 
   const connectionStatus = useNetInfo();
+
   useEffect(() => {
     if (connectionStatus.isConnected === false) {
       Alert.alert("Connection lost!")
@@ -58,17 +61,18 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Screen1"
-      >
+      <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen
-          name="Screen1"
+          name="Welcome"
           component={Start}
         />
-        <Stack.Screen
-          name="Screen2"
-        >
-          {props => <Chat isConnected={connectionStatus.isConnected} db={db} {...props} />}
+        <Stack.Screen name="ChatScreen">
+          {props => <Chat
+            isConnected={connectionStatus.isConnected}
+            db={db}
+            storage={storage}
+            {...props}
+          />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
