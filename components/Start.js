@@ -3,10 +3,9 @@ import { StyleSheet, View, Text, TouchableOpacity, TextInput, ImageBackground, I
 import backgroundImage from '../assets/background-image.png';
 import TextInputWithIcon from './TextInputWithIcon';
 import { getAuth, signInAnonymously } from "firebase/auth";
-// To ignore AsyncStorage warning
 import { LogBox } from 'react-native';
-LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
-
+// To ignore warnings
+LogBox.ignoreAllLogs(true);
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -17,14 +16,13 @@ const Start = ({ navigation }) => {
   const signInUser = () => {
     signInAnonymously(auth)
       .then(result => {
-        navigation.navigate("Screen2", { userID: result.user.uid, name: name, color: chosenColor });
+        navigation.navigate("ChatScreen", { userID: result.user.uid, name: name, color: chosenColor });
         Alert.alert("Signed in Successfully!");
       })
       .catch((error) => {
         Alert.alert("Unable to sign in, try again later.");
       })
   }
-
 
   return (
     <View style={styles.container} >
@@ -37,20 +35,17 @@ const Start = ({ navigation }) => {
         <View style={styles.bodyContainer}>
 
           <View style={styles.inputContainer} >
-            <TextInput
+            {/* <TextInput
               style={styles.textInput}
               value={name}
               onChangeText={setName}
               placeholder='Your Name'
-            />
-            {/* <TextInput value={name} onChangeText={setName} >
+            /> */}
 
-            </TextInput> */}
-
-            {/* <TextInputWithIcon
+            <TextInputWithIcon
               name={name}
               setName={setName}
-            /> */}
+            />
           </View>
 
           <View style={styles.chooseColorContainer} >
