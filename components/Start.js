@@ -35,12 +35,6 @@ const Start = ({ navigation }) => {
         <View style={styles.bodyContainer}>
 
           <View style={styles.inputContainer} >
-            {/* <TextInput
-              style={styles.textInput}
-              value={name}
-              onChangeText={setName}
-              placeholder='Your Name'
-            /> */}
 
             <TextInputWithIcon
               name={name}
@@ -93,14 +87,11 @@ const styles = StyleSheet.create({
   },
   imageBG: {
     flex: 1,
-    // width: '100%',
-    // justifyContent: 'center',
     alignItems: 'center'
   },
   titleContainer: {
     flex: 50,
     justifyContent: 'center',
-    // alignItems: 'center',
   },
   textTitle: {
     color: '#FFFFFF',
@@ -124,8 +115,6 @@ const styles = StyleSheet.create({
 
     padding: 15,
     borderWidth: 1,
-    // marginTop: 15,
-    // marginBottom: 15
   },
   textChooseColor: {
     fontSize: 16,
@@ -154,8 +143,6 @@ const styles = StyleSheet.create({
   chooseColorContainer: {
     flex: 1,
     width: '88%',
-    // alignItems: 'left',
-    // justifyContent: 'center',
   },
   buttonContainer: {
     flex: 1,

@@ -51,64 +51,6 @@ const Chat = ({ route, navigation, db, storage, isConnected }) => {
 
   }, [isConnected]);
 
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     title: name
-  //   });
-
-  //   const handleUserJoin = async () => {
-  //     const systemMessage = {
-  //       _id: Math.random().toString(36).substring(7),
-  //       text: `${name} joined the chat`,
-  //       createdAt: new Date(),
-  //       system: true,
-  //     };
-
-  //     // Add the system message to Firestore
-  //     await addDoc(collection(db, "messages"), systemMessage);
-
-  //   };
-
-  //   if (isConnected === true) {
-  //     // unregister current onSnapshot() listener to avoid registering multiple listeners when
-  //     // useEffect code is re-executed.
-  //     if (unsubMessages) unsubMessages();
-  //     unsubMessages = null;
-
-  //     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-  //     unsubMessages = onSnapshot(q, (documentsSnapshot) => {
-  //       let newMessages = [];
-  //       documentsSnapshot.forEach(doc => {
-  //         const formattedDate = doc.data().createdAt.toDate();
-  //         newMessages.push({ id: doc.id, ...doc.data(), createdAt: formattedDate });
-  //       });
-
-  //       // If there are no messages, it means the user just joined, so add a system message
-  //       if (newMessages.length === 0) {
-  //         handleUserJoin();
-  //       }
-
-  //       cacheMessages(newMessages);
-  //       setMessages(newMessages);
-  //     });
-  //   } else {
-  //     // Load cached messages only if there are no messages in Firestore (user just joined)
-  //     loadCachedMessages().then(cachedMessages => {
-  //       if (cachedMessages.length === 0) {
-  //         handleUserJoin();
-  //       }
-  //       setMessages(cachedMessages);
-  //     });
-  //   }
-
-  //   // Clean up code
-  //   return () => {
-  //     if (unsubMessages) unsubMessages();
-  //   };
-
-  // }, [isConnected]);
-
-
   const cacheMessages = async (messagesToCache) => {
     try {
       await AsyncStorage.setItem('messages', JSON.stringify(messagesToCache));
