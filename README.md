@@ -4,12 +4,19 @@
 
 The Chat Demo App is a simple Android application that demonstrates basic chat functionality. It allows users to send and receive messages, images and videos in a chat interface. This project is a great starting point for building more advanced chat applications on the Android platform.
 
+## Technologies Used
+
+- React
+- React Native
+- Firebase
+- Gifted Chat
+- Expo
+- Android Studio (to test the app)
+
 ## Prerequisites
 
 Before you begin, ensure that you have the following installed on your machine:
 
-- [Git](https://git-scm.com/)
-- [Node.js and npm](https://nodejs.org/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - [Android Studio](https://developer.android.com/studio) (for creating a virtual device)
 
