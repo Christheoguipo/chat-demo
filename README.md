@@ -1,8 +1,8 @@
-# Chat Demo
+# Chat Demo App
 
 ## Project Description
 
-The Chat Demo project is a simple Android application that demonstrates basic chat functionality. It allows users to send and receive messages in a chat interface. This project is a great starting point for building more advanced chat applications on the Android platform.
+The Chat Demo App is a simple Android application that demonstrates basic chat functionality. It allows users to send and receive messages in a chat interface. This project is a great starting point for building more advanced chat applications on the Android platform.
 
 ## Prerequisites
 
